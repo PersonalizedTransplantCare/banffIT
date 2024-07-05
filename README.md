@@ -24,6 +24,24 @@ style="width: 100%; margin: 0 auto; display: flex; justify-content: center;">
 
 <br>
 
+# DISCLAIMER
+
+The banffIT package is distributed in the hope that it will be useful,
+but without any warranty. By using the banffIT package, you agree that
+its contents are used only for research purposes and not for making
+clinical decisions regarding patient care without consulting a
+pathologist. It is provided “as is” without warranty of any kind, either
+expressed or implied, including, but not limited to, the implied
+warranties of merchantability and fitness for a particular purpose.
+
+In no event unless required by applicable law the author(s) will be
+liable to you for damages, including any general, special, incidental or
+consequential damages arising out of the use or inability to use the
+program (including but not limited to loss of data or data being
+rendered inaccurate or losses sustained by you or third parties or a
+failure of the program to operate with any other programs), even if the
+author(s) has been advised of the possibility of such damages.
+
 # Download section
 
 <button>
@@ -59,7 +77,7 @@ library(banffIT)
 banffIT_website()
 
 # use example
-input_file = system.file("extdata", "example.xlsx", package = "banffIT")
+input_file = system.file("extdata", "banff_example.xlsx", package = "banffIT")
 banff_launcher(
   input_file = input_file,
   output_folder = tempdir(), # 'folder_path/example'

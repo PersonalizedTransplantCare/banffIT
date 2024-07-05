@@ -72,7 +72,7 @@ library(banffIT)
 banffIT_website()
 
 # use example
-input_file = system.file("extdata", "example.xlsx", package = "banffIT")
+input_file = system.file("extdata", "banff_example.xlsx", package = "banffIT")
 banff_launcher(
  input_file = input_file,
  output_folder = tempdir(), # 'folder_path/example'
