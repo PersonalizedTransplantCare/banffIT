@@ -15,7 +15,8 @@ Chronic active, and Chronic antibody mediated rejection). The main
 function `banff_launcher()`considers a minimal dataset containing
 biopsies information in a specific format (described by a data
 dictionary), verifies its content and format (based on the data
-dictionary), assigns diagnoses, and creates a summary report.
+dictionary), assigns diagnoses, and creates a summary report. It is
+possible to use different versions of the Banff classification.
 
 ## Main functionality
 
@@ -77,10 +78,13 @@ library(banffIT)
 banffIT_website()
 
 # use example
-input_file = system.file("extdata", "banff_example.xlsx", package = "banffIT")
+version <- 2022
+input_file <- system.file("extdata", paste0(version,"/banff_example.xlsx"), 
+                          package = "banffIT")
 banff_launcher(
   input_file = input_file,
   output_folder = tempdir(), # 'folder_path/example'
+  version = version,
   language = 'label:en',
   option_filter = adequacy == 1,
   detail = TRUE)
