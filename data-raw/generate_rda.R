@@ -3,10 +3,23 @@
 library(fabR)
 library(usethis)
 
-banff_dict <- read_excel_allsheets("inst/extdata/banff_dictionary.xlsx")
-banff_dict <- banff_dict[c('ReadMe','Variables','Categories')]
+banff_dict_2022 <- read_excel_allsheets("inst/extdata/2022/banff_dictionary.xlsx")
+banff_dict_2022 <- banff_dict_2022[c('ReadMe','Variables','Categories')]
+banff_example_2022  <- read_excel_allsheets("inst/extdata/2022/banff_example.xlsx")
+banff_template_2022 <- read_excel_allsheets("inst/extdata/2022/banff_template.xlsx")
 
-banff_example  <- read_excel_allsheets("inst/extdata/banff_example.xlsx")
-banff_template <- read_excel_allsheets("inst/extdata/banff_template.xlsx")
+banff_dict_2017 <- read_excel_allsheets("inst/extdata/2017/banff_dictionary.xlsx")
+banff_dict_2017 <- banff_dict_2017[c('ReadMe','Variables','Categories')]
+banff_example_2017  <- read_excel_allsheets("inst/extdata/2017/banff_example.xlsx")
+banff_template_2017 <- read_excel_allsheets("inst/extdata/2017/banff_template.xlsx")
 
-use_data(banff_dict,banff_template,banff_example, overwrite = TRUE, internal = TRUE)
+use_data(
+  banff_dict_2022,
+  banff_template_2022,
+  banff_example_2022,
+
+  banff_dict_2017,
+  banff_template_2017,
+  banff_example_2017,
+
+  overwrite = TRUE, internal = TRUE)
