@@ -4,10 +4,14 @@
 \alias{banff_dataset_evaluate}
 \title{Evaluates the format and content of the input dataset}
 \usage{
-banff_dataset_evaluate(banff_dataset)
+banff_dataset_evaluate(banff_dataset, version = NULL)
 }
 \arguments{
 \item{banff_dataset}{A tibble object.}
+
+\item{version}{A character string referring the version of Banff classification.
+The most recent classification is the default.
+Options are "2022" (default), "2017".}
 }
 \value{
 A list of tibble objects giving information on the assessment of the dataset.
