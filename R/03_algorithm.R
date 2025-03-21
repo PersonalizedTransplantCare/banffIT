@@ -614,6 +614,7 @@ calculate_adequacy <- function(banff_dataset) {
 
   banff_dataset <-
     banff_dataset %>%
+    add_index(name_index = "{banff_index}") %>%
     mutate(
       adequacy_calculated = case_when(
         !is.na(.data$`glomeruli`) &  is.na(.data$`arteries`)  ~ .data$`adequacy`,
@@ -625,11 +626,12 @@ calculate_adequacy <- function(banff_dataset) {
 
   adequacy_input_copy <-
     banff_dataset %>%
-    select("adequacy","adequacy_calculated") %>%
+    select("{banff_index}","adequacy","adequacy_calculated") %>%
     mutate(
       adequacy_input = .data$`adequacy`,
       adequacy = .data$`adequacy_calculated`) %>%
-    select(-"adequacy")
+    arrange(.data$`{banff_index}`) %>%
+    select(-"adequacy",-"{banff_index}")
 
   return(adequacy_input_copy)
 

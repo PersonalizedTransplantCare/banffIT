@@ -40,7 +40,7 @@ banff_dataset_evaluate <- function(banff_dataset,version = NULL) {
   # check the version.
   version <- get_banff_version(version)
 
-  banff_dict_input <- get_banff_dictionary(version,which = "input")
+  banff_dict_input <- get_banff_dictionary(version,which = "input",detail = TRUE)
 
   banff_assessment <- list(
     `Data dictionary summary` =
