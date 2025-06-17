@@ -201,7 +201,7 @@ For further information please refer to documentation.")
     suppressWarnings({
       data_dict_match_dataset(
         banff_diagnoses,
-        banff_dict_output,
+        as_data_dict_mlstr(banff_dict_output),
         output = 'dataset',data_dict_apply = TRUE)})
 
   banff_diagnoses_dataset <-
@@ -230,7 +230,7 @@ For further information please refer to documentation.")
 
   banff_report$`Dataset assessment - diagnoses` <-
     banff_report$`Dataset assessment - diagnoses` %>%
-    select("variable" = "name","condition" = "Quality assessment comment", "value") %>%
+    select("variable" = "Variable name","condition" = "Dataset assessment", "value" = "Value") %>%
     dplyr::filter(!.data$`variable` %in% banff_report$`Dataset assessment - input`$variable)
 
   banff_report <- banff_report[unique(c(
