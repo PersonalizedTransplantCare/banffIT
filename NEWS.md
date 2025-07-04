@@ -1,4 +1,12 @@
 
+# banffIT 2.1.0 (release : 2025-06-20)
+
+# update dependency madshapR
+
+Due to update in madshapR package, the name columns internally used in
+`banff_launcher()` have been changed. The rest of the functions are not
+affected.
+
 # banffIT 2.0.0
 
 Implementation of the new parameter ‘version’ which allows the user to
@@ -7,6 +15,13 @@ development, the available versions are 2017 and 2022. The latest
 version (2022) is the default. The new version includes two new
 variables in the data dictionary (xm and abo_i) and 4 new diagnostics
 codes for diag_code_2.
+
+## Bug fixes and improvements
+
+- `calculate_adequacy()` There was an error adressing the proper order
+  of participants, giving occasionally wrong calculation of the
+  adequacy. This has been fixed, using an index to ensure identical
+  order in the output.
 
 # banffIT 1.0.1
 

@@ -46,6 +46,7 @@ author(s) has been advised of the possibility of such damages.
 # Download section
 
 <button>
+
 <a href="https://PersonalizedTransplantCare.github.io/banffIT-documentation/templates/banff_dictionary.xlsx" download class="external-link">Data
 Dictionary</a>
 </button>
@@ -53,12 +54,14 @@ Dictionary</a>
 also available in R using `get_banff_dictionary()` </br>
 
 <button>
+
 <a href="https://PersonalizedTransplantCare.github.io/banffIT-documentation/templates/banff_template.xlsx" download class="external-link">Template</a>
 </button>
 
 also available in R using `get_banff_template()` </br>
 
 <button>
+
 <a href="https://PersonalizedTransplantCare.github.io/banffIT-documentation/templates/banff_example.xlsx" download class="external-link">Example</a>
 </button>
 
