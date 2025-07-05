@@ -58,7 +58,7 @@ Imports: dplyr (>= 1.1.0),
     lubridate,
     tidyr,
     fabR,
-    madshapR
+    madshapR (>= 2.0.0)
 Suggests: 
     knitr,
     rmarkdown,
