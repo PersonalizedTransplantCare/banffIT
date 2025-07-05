@@ -1,7 +1,7 @@
 
 # banffIT 2.1.0 (release : 2025-06-20)
 
-# update dependency madshapR
+## update dependency madshapR
 
 Due to update in madshapR package, the name columns internally used in
 `banff_launcher()` have been changed. The rest of the functions are not
