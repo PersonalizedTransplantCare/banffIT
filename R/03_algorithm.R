@@ -8,6 +8,7 @@
 #' [banff_launcher()] to run additional tests.
 #'
 #' @param banff_dataset A tibble object.
+#' @inheritParams get_banff_version
 #'
 #' @return
 #' A tibble object that contains additional variables with the diagnoses results.
@@ -23,10 +24,13 @@
 #' @import dplyr
 #' @importFrom rlang .data
 #' @export
-add_diagnoses <- function(banff_dataset) {
+add_diagnoses <- function(banff_dataset, version = NULL) {
+
+  # check the version.
+  version <- get_banff_version(version)
 
   # check input
-  banff_assessment <- suppressMessages(banff_dataset_evaluate(banff_dataset))
+  banff_assessment <- suppressMessages(banff_dataset_evaluate(banff_dataset,version))
 
   if(!is.null(attributes(banff_assessment)$error)){
     message(attributes(banff_assessment)$error)
@@ -114,8 +118,26 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
       aamr12  = ifelse((.data$`active_atcmr_code_3.TEMP` + .data$`active_atcmr_code_4.TEMP`) > 0 &
                         .data$`g_score` + .data$`ptc_score` >= 2 &
                         .data$`g_score` >= 1,                             1L, 0L),
-      aamr13  = ifelse( .data$`v_score` > 0,                              1L, 0L),
-      aamr14  = ifelse((.data$`atma` + .data$`atn`) > 0,                    1L, 0L),
+      aamr13  = ifelse( .data$`v_score` > 0,                              1L, 0L))
+
+
+  # SEBT remove  "+ .data$`atn`" to align with version 2022
+  if(version == "2017"){
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        aamr14  = ifelse((.data$`atma` + .data$`atn`) > 0, 1L, 0L))}
+
+  if(version == "2022"){
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        aamr14  = ifelse((.data$`atma`) > 0,1L, 0L))}
+
+  banff_diagnoses <-
+    banff_diagnoses %>%
+    mutate(
+
       aamr1   = ifelse( .data$`aamr11.1` == 1 |
                         .data$`aamr11.2` == 1 |
                         .data$`aamr12`   == 1 |
@@ -157,6 +179,16 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
                          .data$`aamr22.2` == 1 |
                          .data$`aamr22.3` == 1,                             1L, 0L))
 
+
+  if(version == "2017"){
+
+  }
+
+  if(version == "2022"){
+    # SEBT Definition of Microvascular inflammation/injury (MVI),
+    # DSA-negative and C4d-negative
+  }
+
   banff_diagnoses <-
     banff_diagnoses %>%
     mutate(
@@ -177,6 +209,7 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
                            .data$`aamr21` == 0L,                           1L, 0L),
 
       # the previous conditon is used as .data$g_score + .data$ptc_score >= 2
+
       susp_c4dneg_aamr = ifelse(.data$`c4dneg_aamr` == 0 &
                                (.data$`aamr22.1` == 1 |
                                 .data$`aamr22.2` == 1 |
@@ -191,9 +224,6 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
       susp_activeaamr  = ifelse(.data$`susp_aamr` == 1 |
                                 .data$`susp_c4dneg_aamr` == 1,            1L, 0L)
     )
-
-
-
 
   # define historical tcmr based any previous catcmr or atcmr record
   # tcmr historical computation
@@ -234,19 +264,73 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
 
       camr12 = ifelse(.data$`sptcbmml`    == 1L,      1L, 0L),
 
-      camr13 = case_when(
-        .data$`leuscint` == 1 & .data$`hist_tcmr_calculated` == 0L  ~ 1L,
-        .data$`newaif`   == 1                                       ~ 1L,
-        TRUE                                                        ~ 0L)
     )
+
+
+  if(version == "2017"){
+
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        camr13 = case_when(
+          .data$`leuscint` == 1 &
+            .data$`hist_tcmr_calculated` == 0L  ~ 1L,
+
+          .data$`newaif`   == 1                 ~ 1L,
+          TRUE                                  ~ 0L))
+
+        }
+
+  if(version == "2022"){
+
+    # SEBT removing of camr13 for version 2022
+
+    }
+
+  if(version == "2017"){
+
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        camr1 = ifelse(.data$`camr11` == 1L |
+                         .data$`camr12` == 1L|
+                         .data$`camr13` == 1L,1L, 0L)
+        )
+
+  }
+
+  if(version == "2022"){
+
+    # SEBT remove camr13 for version 2022
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        camr1 = ifelse(.data$`camr11` == 1L |
+                         .data$`camr12` == 1L,1L, 0L)
+      )
+
+  }
+
+  if(version == "2017"){
+
+  }
+
+  if(version == "2022"){
+
+    # SEBT Probable AMR to add to the data dictionary and to the output diagnoses
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        prob_amr = ifelse(.data$`aamr1` == 1 &
+                            .data$`aamr2` == 0 &
+                            .data$`camr1` == 0 &
+                            .data$`dsa` == 1, 1L, 0L)
+      )
+  }
 
   banff_diagnoses <-
     banff_diagnoses %>%
     mutate(
-
-      camr1 = ifelse(.data$`camr11` == 1L |
-                       .data$`camr12` == 1L |
-                       .data$`camr13` == 1L,                          1L, 0L),
 
       activeabmr = ifelse(
         (.data$`aamr` == 1 |
@@ -348,55 +432,118 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
 
     )
 
+
+  if(version == "2017"){
+
+
+  }
+
+
+  if(version == "2022"){
+
+    # SEBT C4d staining with acute tubular injury (ATI)
+    # Create 2 variables: crossmatch (DSA positive / DSA negative) and abo_compatibility (ABO compatible / ABO incompatible)
+
+    # GF placeholder for mvi (SEBT Definition of Microvascular inflammation/injury (MVI), DSA-negative and C4d-negative)
+    # prob_amr est defini 2 fois (ligne 324).
+
+
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(c4d_staining_atn = ifelse(.data$`atn`              == 1 &
+                                       .data$`aamr21`           == 1 &
+                                       .data$`aamr1`            == 0 &
+                                       .data$`camr1`            == 0, 1L,0L),
+
+             # prob_amr         = ifelse(.data$`c4d_staining_atn` == 1 &
+             #                           .data$`xm`               == 1 ~ 1L,0L),
+
+             accomodation     = ifelse(.data$`c4d_staining_atn` == 1 &
+                                       .data$`abo_i`            == 1, 1L,0L),
+
+             mvi              = ifelse(.data$`c4d_staining_atn` == 1 &
+                                       .data$`xm`               == 1, 1L,0L)
+             )
+
+  }
+
   # final abmr variable
   # final suspicious abmr
+
+
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+
+        final_abmr = case_when(
+          .data$`chractabmr` == 1  ~  4    ,
+          .data$`chrabmr`    == 1  ~  3    ,
+          .data$`activeabmr` == 1  ~  2    ,
+          .data$`c4d_only`   == 1  ~  1    ,
+          TRUE                     ~  NA),
+
+        final_susp_abmr = case_when(
+          .data$`susp_camr`         == 1  ~  2 ,
+          .data$`susp_c4dneg_camr`  == 1  ~  4 ,
+          .data$`susp_aamr`         == 1  ~  1 ,
+          .data$`susp_c4dneg_aamr`  == 1  ~  3 ,
+          TRUE                            ~  NA),
+
+        final_abmr_verified = case_when(
+          .data$`chractabmr`       == 1 ~ 6,
+          .data$`chrabmr`          == 1 ~ 4,
+          .data$`activeabmr`       == 1 ~ 3,
+          .data$`c4d_only`         == 1 ~ 1,
+          .data$`susp_camr`        == 1 ~ 5,
+          .data$`susp_c4dneg_camr` == 1 ~ 8,
+          .data$`susp_aamr`        == 1 ~ 2,
+          .data$`susp_c4dneg_aamr` == 1 ~ 7,
+          TRUE                          ~  NA)
+      )
+
+  if(version == "2017"){
+
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        diag_code_2 = case_when(
+          .data$`chractabmr`      == 1 ~ 5 ,
+          .data$`susp_chractabmr` == 1 ~ 4 ,
+          .data$`chrabmr`         == 1 ~ 6 ,
+          .data$`activeabmr`      == 1 ~ 3 ,
+          .data$`susp_activeaamr` == 1 ~ 2 ,
+          .data$`c4d_only`        == 1 ~ 1 ,
+          TRUE                 ~ NA),
+        diag_code_2_final_abmr      = ifelse(.data$`diag_code_2` %in% c(1,3,5,6), .data$`diag_code_2`,NA),
+        diag_code_2_final_susp_abmr = ifelse(.data$`diag_code_2` %in% c(2,4), .data$`diag_code_2`,NA)
+      )
+  }
+
+  if(version == "2022"){
+
+    banff_diagnoses <-
+      banff_diagnoses %>%
+      mutate(
+        diag_code_2 = case_when(
+          .data$`chractabmr`       == 1 ~ 9  , # GF was 5
+          .data$`susp_chractabmr`  == 1 ~ 8  , # GF was 4
+          .data$`chrabmr`          == 1 ~ 10 , # GF was 6
+          .data$`activeabmr`       == 1 ~ 7  , # GF was 3
+          .data$`susp_activeaamr`  == 1 ~ 6  , # GF was 2
+          .data$`mvi`              == 1 ~ 5  , # GF new
+          .data$`prob_amr`         == 1 ~ 4  , # GF new
+          .data$`accomodation`     == 1 ~ 3  , # GF new
+          .data$`c4d_staining_atn` == 1 ~ 2  , # GF new
+          .data$`c4d_only`         == 1 ~ 1  , # GF same
+          TRUE                          ~ NA),
+        diag_code_2_final_abmr      = ifelse(.data$`diag_code_2` %in% c(1,2,3,4,5,7,9,10), .data$`diag_code_2`,NA),
+        diag_code_2_final_susp_abmr = ifelse(.data$`diag_code_2` %in% c(6,8)             , .data$`diag_code_2`,NA)
+
+      )
+  }
+
   banff_diagnoses <-
     banff_diagnoses %>%
-    mutate(
-
-      final_abmr = case_when(
-        .data$`chractabmr` == 1  ~  4    ,
-        .data$`chrabmr`    == 1  ~  3    ,
-        .data$`activeabmr` == 1  ~  2    ,
-        .data$`c4d_only`   == 1  ~  1    ,
-        TRUE                   ~  NA),
-
-      final_susp_abmr = case_when(
-        .data$`susp_camr`         == 1  ~  2 ,
-        .data$`susp_c4dneg_camr`  == 1  ~  4 ,
-        .data$`susp_aamr`         == 1  ~  1 ,
-        .data$`susp_c4dneg_aamr`  == 1  ~  3 ,
-        TRUE                          ~  NA),
-
-      final_abmr_verified = case_when(
-        .data$`chractabmr`       == 1 ~ 6,
-        .data$`chrabmr`          == 1 ~ 4,
-        .data$`activeabmr`       == 1 ~ 3,
-        .data$`c4d_only`         == 1 ~ 1,
-        .data$`susp_camr`        == 1 ~ 5,
-        .data$`susp_c4dneg_camr` == 1 ~ 8,
-        .data$`susp_aamr`        == 1 ~ 2,
-        .data$`susp_c4dneg_aamr` == 1 ~ 7,
-        TRUE                        ~  NA)
-    )
-
-  banff_diagnoses <-
-    banff_diagnoses %>%
-    mutate(
-
-      diag_code_2 = case_when(
-        .data$`chractabmr`      == 1 ~ 5 ,
-        .data$`susp_chractabmr` == 1 ~ 4 ,
-        .data$`chrabmr`         == 1 ~ 6 ,
-        .data$`activeabmr`      == 1 ~ 3 ,
-        .data$`susp_activeaamr` == 1 ~ 2 ,
-        .data$`c4d_only`        == 1 ~ 1 ,
-        TRUE                 ~ NA),
-      diag_code_2_final_abmr      = ifelse(.data$`diag_code_2` %in% c(1,3,5,6), .data$`diag_code_2`,NA),
-      diag_code_2_final_susp_abmr = ifelse(.data$`diag_code_2` %in% c(2,4), .data$`diag_code_2`,NA)
-
-    ) %>%
-
     mutate(
 
       diag_code_4_active           = na_if(.data$`active_atcmr_code_4.TEMP` , 0),
@@ -467,6 +614,7 @@ calculate_adequacy <- function(banff_dataset) {
 
   banff_dataset <-
     banff_dataset %>%
+    add_index(name_index = "{banff_index}") %>%
     mutate(
       adequacy_calculated = case_when(
         !is.na(.data$`glomeruli`) &  is.na(.data$`arteries`)  ~ .data$`adequacy`,
@@ -478,11 +626,12 @@ calculate_adequacy <- function(banff_dataset) {
 
   adequacy_input_copy <-
     banff_dataset %>%
-    select("adequacy","adequacy_calculated") %>%
+    select("{banff_index}","adequacy","adequacy_calculated") %>%
     mutate(
       adequacy_input = .data$`adequacy`,
       adequacy = .data$`adequacy_calculated`) %>%
-    select(-"adequacy")
+    arrange(.data$`{banff_index}`) %>%
+    select(-"adequacy",-"{banff_index}")
 
   return(adequacy_input_copy)
 

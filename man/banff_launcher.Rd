@@ -8,6 +8,7 @@ banff_launcher(
   input_file,
   output_folder,
   language = "label:en",
+  version = NULL,
   option_filter,
   detail = FALSE
 )
@@ -23,6 +24,10 @@ the output files will be saved.}
 \item{language}{Optional argument allowing the user to get the diagnoses in a
 specific language. Options are "label:en" (default), "label:fr", "label:de",
 "label:sp", "label:nl", "label:jp", "label:in".}
+
+\item{version}{A character string referring the version of Banff classification.
+The most recent classification is the default.
+Options are "2022" (default), "2017".}
 
 \item{option_filter}{Optional argument allowing the user to filter the
 dataset using \code{\link[dplyr:filter]{dplyr::filter()}} syntax. The variable used to filter must
@@ -50,7 +55,9 @@ and descriptive statistics.
 \examples{
 {
 
-input_file <- system.file("extdata", "banff_template.xlsx", package = "banffIT")
+version <- get_banff_version()
+input_file <- system.file("extdata",
+   paste0(version,"/banff_template.xlsx"), package = "banffIT")
 banff_launcher(input_file, output_folder = tempdir())
 
 }

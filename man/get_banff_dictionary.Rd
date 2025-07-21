@@ -4,9 +4,18 @@
 \alias{get_banff_dictionary}
 \title{Get the Banff data dictionary}
 \usage{
-get_banff_dictionary(which = NULL, language = "label:en", detail = FALSE)
+get_banff_dictionary(
+  version = NULL,
+  which = NULL,
+  language = "label:en",
+  detail = FALSE
+)
 }
 \arguments{
+\item{version}{A character string referring the version of Banff classification.
+The most recent classification is the default.
+Options are "2022" (default), "2017".}
+
 \item{which}{Indicates which variables to get from the Banff data dictionary.
 If NULL both input and output variables are provided.*}
 

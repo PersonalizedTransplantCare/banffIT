@@ -19,6 +19,7 @@
 #' * Constraints specified in the data dictionary are respected
 #'
 #' @param banff_dataset A tibble object.
+#' @inheritParams get_banff_version
 #'
 #' @return
 #' A list of tibble objects giving information on the assessment of the dataset.
@@ -34,9 +35,12 @@
 #' @import dplyr tidyr madshapR
 #' @importFrom rlang .data
 #' @export
-banff_dataset_evaluate <- function(banff_dataset) {
+banff_dataset_evaluate <- function(banff_dataset,version = NULL) {
 
-  banff_dict_input <- get_banff_dictionary("input")
+  # check the version.
+  version <- get_banff_version(version)
+
+  banff_dict_input <- get_banff_dictionary(version,which = "input",detail = TRUE)
 
   banff_assessment <- list(
     `Data dictionary summary` =
@@ -74,7 +78,7 @@ process."
 
   test_missing_cols <-
     banff_dict_input$`Variables`$`name`[!
-                                          banff_dict_input$`Variables`$`name` %in% names(banff_dataset)]
+                  banff_dict_input$`Variables`$`name` %in% names(banff_dataset)]
 
   # if no col at all
   if(length(test_missing_cols) == length(banff_dict_input$`Variables`$`name`)){
@@ -101,7 +105,7 @@ Your dataset contains no variables that matches the data dictionary."
 
 Some variables in your dataset are missing.
 Missing variables in dataset : \n\n",
-                                                   bold(toString(test_missing_cols) %>% str_replace_all(", ","\n")))
+bold(toString(test_missing_cols) %>% str_replace_all(", ","\n")))
 
     banff_assessment$`Dataset assessment` <-
       tibble(
@@ -164,7 +168,7 @@ these variable must be filled with proper categories, and cannot contain NA.
 Usually, you can replace all these NA by '0'.
 
 Variables in the dataset that contain NA : \n\n",
-                                                  bold(toString(contains_na) %>% str_replace_all(", ","\n")))
+bold(toString(contains_na) %>% str_replace_all(", ","\n")))
 
     for(i in contains_na){
       # stop()}
@@ -585,7 +589,9 @@ Your dataset contains no error."
 #  {
 #
 #  library(fabR)
-#  input_file <- system.file("extdata", "banff_example.xlsx", package = "banffIT")
+#  version <- get_banff_version()
+#  input_file <- system.file("extdata",
+#     paste0(version,"/banff_example.xlsx"), package = "banffIT")
 #  banff_dataset <- read_excel_allsheets(input_file)[1,]
 #  banff_dataset_evaluate(banff_dataset)
 #

@@ -4,7 +4,12 @@
 \alias{get_banff_template}
 \title{Get a dataset template}
 \usage{
-get_banff_template()
+get_banff_template(version = NULL)
+}
+\arguments{
+\item{version}{A character string referring the version of Banff classification.
+The most recent classification is the default.
+Options are "2022" (default), "2017".}
 }
 \value{
 A tibble representing the empty dataset.

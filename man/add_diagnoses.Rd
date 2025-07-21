@@ -4,10 +4,14 @@
 \alias{add_diagnoses}
 \title{Add diagnoses to the input dataset}
 \usage{
-add_diagnoses(banff_dataset)
+add_diagnoses(banff_dataset, version = NULL)
 }
 \arguments{
 \item{banff_dataset}{A tibble object.}
+
+\item{version}{A character string referring the version of Banff classification.
+The most recent classification is the default.
+Options are "2022" (default), "2017".}
 }
 \value{
 A tibble object that contains additional variables with the diagnoses results.

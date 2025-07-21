@@ -21,6 +21,7 @@
 #' @param language Optional argument allowing the user to get the diagnoses in a
 #' specific language. Options are "label:en" (default), "label:fr", "label:de",
 #' "label:sp", "label:nl", "label:jp", "label:in".
+#' @inheritParams get_banff_version
 #' @param option_filter Optional argument allowing the user to filter the
 #' dataset using [dplyr::filter()] syntax. The variable used to filter must
 #' exist.
@@ -34,7 +35,9 @@
 #' @examples
 #' {
 #'
-#' input_file <- system.file("extdata", "banff_template.xlsx", package = "banffIT")
+#' version <- get_banff_version()
+#' input_file <- system.file("extdata",
+#'    paste0(version,"/banff_template.xlsx"), package = "banffIT")
 #' banff_launcher(input_file, output_folder = tempdir())
 #'
 #' }
@@ -50,6 +53,7 @@ banff_launcher <- function(
     input_file,
     output_folder,
     language = "label:en",
+    version = NULL,
     option_filter,
     detail = FALSE){
 
@@ -71,6 +75,9 @@ banff_launcher <- function(
   }
 
   ##### 1 - CHECK ARGUMENTS ####
+
+  # get the version
+  version <- get_banff_version(version)
 
   # list of arguments provided by user in the function.
   # fargs <- list()
@@ -120,9 +127,9 @@ Diagnoses for this file already exists in '",basename(output_folder),"'")
   banff_dataset <- read_file(input_file)
 
   # creation of the Banff dictionary
-  banff_dict        <- get_banff_dictionary(which = NULL, language = language, detail = detail)
-  banff_dict_input  <- get_banff_dictionary(which = "input", language = language, detail = detail)
-  banff_dict_output <- get_banff_dictionary(which = "output", language = language, detail = detail)
+  banff_dict        <- suppressMessages(get_banff_dictionary(version,NULL    , language, detail))
+  banff_dict_input  <- suppressMessages(get_banff_dictionary(version,"input" , language, detail))
+  banff_dict_output <- suppressMessages(get_banff_dictionary(version,"output", language, detail))
 
   ## creation of adequacy calculated
   adequacy_input_copy <- calculate_adequacy(banff_dataset)
@@ -145,7 +152,7 @@ Diagnoses for this file already exists in '",basename(output_folder),"'")
 
   ##### evaluation of input dataset.
   banff_assessment <-
-    suppressMessages(banff_dataset_evaluate(banff_dataset))
+    suppressMessages(banff_dataset_evaluate(banff_dataset,version))
 
   ##### IF EMPTY #####
   if(!is.null(attributes(banff_assessment)$empty)){
@@ -182,10 +189,10 @@ For further information please refer to documentation.")
 
   }
 
-  message("\n[3/6] - Add diagnosis to each observation of'",
+  message("\n[3/6] - Add diagnosis to each observation of '",
           bold(input_file_name),"'")
 
-  banff_diagnoses <- add_diagnoses(banff_dataset)
+  banff_diagnoses <- suppressMessages(add_diagnoses(banff_dataset,version))
 
   message("\n[4/6] - Generate labels for each variable of '",
           bold(input_file_name),"'")
@@ -194,7 +201,7 @@ For further information please refer to documentation.")
     suppressWarnings({
       data_dict_match_dataset(
         banff_diagnoses,
-        banff_dict_output,
+        as_data_dict_mlstr(banff_dict_output),
         output = 'dataset',data_dict_apply = TRUE)})
 
   banff_diagnoses_dataset <-
@@ -223,7 +230,7 @@ For further information please refer to documentation.")
 
   banff_report$`Dataset assessment - diagnoses` <-
     banff_report$`Dataset assessment - diagnoses` %>%
-    select("variable" = "name","condition" = "Quality assessment comment", "value") %>%
+    select("variable" = "Variable name","condition" = "Dataset assessment", "value" = "Value") %>%
     dplyr::filter(!.data$`variable` %in% banff_report$`Dataset assessment - input`$variable)
 
   banff_report <- banff_report[unique(c(

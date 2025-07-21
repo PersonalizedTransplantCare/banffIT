@@ -5,6 +5,7 @@
 #' This function gets the data dictionary used to control the consistency of
 #' the input dataset.
 #'
+#' @inheritParams get_banff_version
 #' @param which Indicates which variables to get from the Banff data dictionary.
 #' If NULL both input and output variables are provided.*
 #' @param language Optional input allowing the user to get the diagnoses in a
@@ -28,10 +29,15 @@
 #' @import dplyr
 #' @importFrom rlang .data
 #' @export
-get_banff_dictionary <- function(which = NULL, language = "label:en",detail = FALSE){
+get_banff_dictionary <- function(
+    version = NULL,which = NULL, language = "label:en",detail = FALSE){
+
+  # get the version
+  version <- get_banff_version(version)
 
   # creation of the data dictionary
-  banff_dict <- get("banff_dict", envir = asNamespace("banffIT"))
+  banff_dict <- get(paste0("banff_dict_",version),
+                    envir = asNamespace("banffIT"))
 
   # check if the label provided by user is among the provided labels.
   labels <- str_subset(names(banff_dict$`Categories`),'^label')
@@ -120,6 +126,8 @@ The possible `language` are : ",toString(labels))
 #' @description
 #' This function gets the dataset used in the vignette as an example.
 #'
+#' @inheritParams get_banff_version
+#'
 #' @return
 #' A tibble representing the dataset used in the the vignette as an example.
 #'
@@ -133,10 +141,14 @@ The possible `language` are : ",toString(labels))
 #' @import dplyr
 #' @importFrom rlang .data
 #' @export
-get_banff_example <- function(){
+get_banff_example <- function(version = NULL){
 
-  # creation of the data dictionary
-  banff_example <- get("banff_example", envir = asNamespace("banffIT"))
+  # get the version
+  version <- get_banff_version(version)
+
+  # creation of the example
+  banff_example <- get(paste0("banff_example_",version),
+                       envir = asNamespace("banffIT"))
 
   return(banff_example)
 
@@ -148,6 +160,8 @@ get_banff_example <- function(){
 #' @description
 #' This function gets the empty dataset with variables that are mandatory in the
 #' process.
+#'
+#' @inheritParams get_banff_version
 #'
 #' @return
 #' A tibble representing the empty dataset.
@@ -162,10 +176,14 @@ get_banff_example <- function(){
 #' @import dplyr
 #' @importFrom rlang .data
 #' @export
-get_banff_template <- function(){
+get_banff_template <- function(version = NULL){
 
-  # creation of the data dictionary
-  banff_template <- get("banff_template", envir = asNamespace("banffIT"))
+  # get the version
+  version <- get_banff_version(version)
+
+  # creation of the template
+  banff_template <- get(paste0("banff_template_",version),
+                    envir = asNamespace("banffIT"))
 
   return(banff_template)
 
@@ -198,7 +216,45 @@ banffIT_website <- function(){
 
 }
 
+#' @title
+#' Extract version of the Banff classification
+#'
+#' @description
+#' This internal function extracts for user input the version of the Banff
+#' classification.
+#'
+#' @param version A character string referring the version of Banff classification.
+#' The most recent classification is the default.
+#' Options are "2022" (default), "2017".
+#'
+#' @returns
+#' A character string which is the version of Banff classification.
+#'
+#' @examples
+#' {
+#'
+#' get_banff_version()
+#'
+#' }
+#'
+#' @import dplyr
+#'
+#' @export
+get_banff_version <- function(version = NULL){
 
+  # check the version.
+  versions_list <- c('2017','2022')
+  if(is.null(version)) version <- last(versions_list)
+  version <- toString(version)
+  if(! version %in% versions_list)
+    stop(call. = FALSE,"
 
+The possible `version` values are : ",toString(versions_list))
 
+  if(! version %in% last(versions_list))
+    message("
+A more recent version can be used (",last(versions_list),")")
+
+  return(version)
+}
 

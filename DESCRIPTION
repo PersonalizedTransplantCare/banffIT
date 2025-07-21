@@ -1,7 +1,7 @@
 Package: banffIT
 Type: Package
-Title: Automatize Diagnosis Standardized Assignation Using the Banff Classification
-Version: 1.0.0
+Title: Automated Standardized Assignment of the Banff Classification
+Version: 2.0.0
 Authors@R: 
     c(person(given = "Guillaume",
              family = "Fabre",
@@ -12,6 +12,10 @@ Authors@R:
              family = "Sapir-Pichhadze",
              role=c("fnd","cph","ctb"),
              email="ruth.sapir-pichhadze@mcgill.ca"),
+      person(given = "Jan Ulrich",
+             family = "Becker",
+             role=c("ctb"),
+             email="janbecker@gmx.com"),
       person(given = "Samuel",
              family = "El Bouzaïdi Tiali",
              role=c("ctb"),
@@ -23,7 +27,11 @@ Authors@R:
       person(given = "Tina",
              family = "Wey",
              role=c("ctb"),
-             email="twey@maelstrom-research.org"))
+             email="twey@maelstrom-research.org"),
+      person(given = "Edden",
+             family = "Gitelman",
+             role=c("ctb"),
+             email="edden.gitelman@mail.mcgill.ca"))
 Maintainer: Guillaume Fabre <guijoseph.fabre@gmail.com>
 Description: Assigns standardized diagnoses using the Banff Classification
     (Category 1 to 6 diagnoses, including Acute and Chronic active T-cell
@@ -50,7 +58,7 @@ Imports: dplyr (>= 1.1.0),
     lubridate,
     tidyr,
     fabR,
-    madshapR
+    madshapR (>= 2.0.0)
 Suggests: 
     knitr,
     rmarkdown,
