@@ -578,7 +578,7 @@ Use `banff_dataset_evaluate(banff_dataset)` to help you correcting your file.\n"
   # replace adequacy by what it was originally
   banff_diagnoses <-
     banff_diagnoses %>%
-    bind_cols(adequacy_input_copy) %>%
+    left_join(adequacy_input_copy, by = "biopsy_id") %>%
     mutate(adequacy = .data$`adequacy_input`) %>%
     select(-"adequacy_input")
 
@@ -614,7 +614,6 @@ calculate_adequacy <- function(banff_dataset) {
 
   banff_dataset <-
     banff_dataset %>%
-    add_index(name_index = "{banff_index}") %>%
     mutate(
       adequacy_calculated = case_when(
         !is.na(.data$`glomeruli`) &  is.na(.data$`arteries`)  ~ .data$`adequacy`,
@@ -624,14 +623,15 @@ calculate_adequacy <- function(banff_dataset) {
                  ifelse((.data$`glomeruli` == 0 & .data$`arteries` == 1), 2 , 3)),
         TRUE                                  ~ .data$`adequacy`))
 
+
+
   adequacy_input_copy <-
     banff_dataset %>%
-    select("{banff_index}","adequacy","adequacy_calculated") %>%
+    select(biopsy_id, adequacy, adequacy_calculated) %>%
     mutate(
       adequacy_input = .data$`adequacy`,
       adequacy = .data$`adequacy_calculated`) %>%
-    arrange(.data$`{banff_index}`) %>%
-    select(-"adequacy",-"{banff_index}")
+    select(-adequacy)
 
   return(adequacy_input_copy)
 

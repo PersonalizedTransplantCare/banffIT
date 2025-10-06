@@ -131,12 +131,6 @@ Diagnoses for this file already exists in '",basename(output_folder),"'")
   banff_dict_input  <- suppressMessages(get_banff_dictionary(version,"input" , language, detail))
   banff_dict_output <- suppressMessages(get_banff_dictionary(version,"output", language, detail))
 
-  ## creation of adequacy calculated
-  adequacy_input_copy <- calculate_adequacy(banff_dataset)
-  banff_dataset <-
-    banff_dataset %>%
-    mutate(
-      adequacy = adequacy_input_copy$`adequacy_calculated`)
 
   # filter the dataset if the user specified filter
   if(!is.null(fargs$`option_filter`)){
